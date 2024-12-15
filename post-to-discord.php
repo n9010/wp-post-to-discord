@@ -29,6 +29,11 @@ function post_to_discord($new_status, $old_status, $post) {
         ? get_the_post_thumbnail_url($id, 'thumbnail') // Use smaller image size
         : get_option('discord_default_image_url', 'https://via.placeholder.com/150x150.png');
 
+    // Get the description (meta description, excerpt, or fallback)
+    $meta_description = get_post_meta($id, '_yoast_wpseo_metadesc', true);
+    $excerpt = $post->post_excerpt;
+    $content_fallback = wp_trim_words(strip_tags($post->post_content), 30, '...');
+    $description = $meta_description ?: ($excerpt ?: $content_fallback);
     // Verify if the image URL is accessible
     $response = wp_remote_head($thumbnail_url);
     if (is_wp_error($response) || wp_remote_retrieve_response_code($response) != 200) {
@@ -41,11 +46,13 @@ function post_to_discord($new_status, $old_status, $post) {
     $embed = array(
         "title" => $postTitle,
         "url" => $permalink,
+        "description" => $description,
         "thumbnail" => array(
             "url" => $thumbnail_url
         ),
+        "content" => "$thumbnail_url",        
 //        "image" => array(
-//           "url" => $thumbnail_url
+//          "url" => $thumbnail_url
 //        ),
         "timestamp" => gmdate('Y-m-d\TH:i:s\Z'),
         "footer" => array(
