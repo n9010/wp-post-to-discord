@@ -1,2 +1,2 @@
 # wp-post-to-discord
-Based on Matt Weber Post to Discord.
+Based on the idea of Matt Weber Post to Discord. 
